@@ -1,7 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"log"
+
+	database "github.com/Rhisiart/Merchandise/internal/db"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	db, err := database.NewDatabase()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db.Init()
+
 }

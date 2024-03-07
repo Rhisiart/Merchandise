@@ -1,8 +1,11 @@
-package database
+package db
 
 import (
 	"database/sql"
 	"fmt"
+	"log"
+
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -14,11 +17,11 @@ const (
 	dbname     = "Merchandise"
 )
 
-type database struct {
-	db *sql.DB
+type Database struct {
+	database *sql.DB
 }
 
-func NewDatabase() (*database, error) {
+func NewDatabase() (*Database, error) {
 	connString := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -32,7 +35,18 @@ func NewDatabase() (*database, error) {
 		return nil, err
 	}
 
-	return &database{
-		db: db,
+	return &Database{
+		database: db,
 	}, nil
+}
+
+func (db *Database) Init() {
+	log.Printf("Databse inizialiase...")
+	status := db.database.Stats()
+	log.Print("Databse status = ", status)
+}
+
+func (db *Database) Close() {
+	db.database.Close()
+	log.Printf("Databse closed")
 }
