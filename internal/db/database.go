@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Rhisiart/Merchandise/types"
 	_ "github.com/lib/pq"
 )
 
@@ -41,9 +42,13 @@ func NewDatabase() (*Database, error) {
 }
 
 func (db *Database) Init() {
-	log.Printf("Databse inizialiase...")
+	log.Printf("Database initialized...")
 	status := db.database.Stats()
-	log.Print("Databse status = ", status)
+	log.Print("Database status = ", status)
+}
+
+func (db *Database) Create(operation types.IOperation) (int64, error) {
+	return operation.Create(db.database)
 }
 
 func (db *Database) Close() {

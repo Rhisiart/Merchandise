@@ -1,16 +1,12 @@
 package types
 
+import "database/sql"
+
 type IOperation interface {
-	Create() error
+	Create(db *sql.DB) (int64, error)
 	Read(id int64) error
 	Update() error
-	Delete() error
-}
-
-type Design struct {
-	DesignId    int64
-	Name        string
-	Description string
+	Delete(id int64) error
 }
 
 type ClothingType struct {

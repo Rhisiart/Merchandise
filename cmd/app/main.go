@@ -3,16 +3,29 @@ package main
 import (
 	"log"
 
-	database "github.com/Rhisiart/Merchandise/internal/db"
+	"github.com/Rhisiart/Merchandise/internal/db"
+	design "github.com/Rhisiart/Merchandise/internal/db/operations"
 )
 
 func main() {
-	db, err := database.NewDatabase()
+	database, err := db.NewDatabase()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db.Init()
+	database.Init()
 
+	design := &design.Design{
+		Name:        "Design 2",
+		Description: "Design number 2",
+	}
+
+	id, err := database.Create(design)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Design id = %d", id)
 }
