@@ -47,8 +47,12 @@ func (db *Database) Init() {
 	log.Print("Database status = ", status)
 }
 
-func (db *Database) Create(operation types.IOperation) (int64, error) {
+func (db *Database) Create(operation types.Operation) error {
 	return operation.Create(db.database)
+}
+
+func (db *Database) Read(operation types.Operation) error {
+	return operation.Read(db.database)
 }
 
 func (db *Database) Close() {

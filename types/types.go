@@ -1,12 +1,14 @@
 package types
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
-type IOperation interface {
-	Create(db *sql.DB) (int64, error)
-	Read(id int64) error
-	Update() error
-	Delete(id int64) error
+type Operation interface {
+	Create(db *sql.DB) error
+	Read(db *sql.DB) error
+	Update(db *sql.DB) error
+	Delete(db *sql.DB) error
 }
 
 type ClothingType struct {
