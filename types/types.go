@@ -11,6 +11,9 @@ type Operation interface {
 	Delete(db *sql.DB) error
 }
 
+type Controllers interface {
+}
+
 type ClothingType struct {
 	ClothingTypeId int64
 	Name           string
