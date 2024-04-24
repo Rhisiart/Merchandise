@@ -16,7 +16,6 @@ func main() {
 	}
 
 	database := db.NewDatabase(cfg.Database.DatabaseUrl)
-
 	connErro := database.Connect()
 
 	if connErro != nil {
@@ -24,6 +23,5 @@ func main() {
 	}
 
 	server := api.NewServer(cfg.HTTPServer, database)
-
 	server.Start()
 }

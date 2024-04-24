@@ -1,12 +1,14 @@
 package db
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 type Customer struct {
-	CustomerId int64
-	Name       string
-	Email      string
-	Address    string
+	CustomerId int64  `json:"CustomerId"`
+	Name       string `json:"Name"`
+	Email      string `json:"Email"`
+	Address    string `json:"Address"`
 }
 
 func (customer *Customer) Create(db *sql.DB) error {
