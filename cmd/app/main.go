@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/Rhisiart/Merchandise/internal/api"
@@ -9,6 +10,7 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
 	cfg, err := config.Load()
 
 	if err != nil {
@@ -23,5 +25,7 @@ func main() {
 	}
 
 	server := api.NewServer(cfg.HTTPServer, database)
-	server.Start()
+	server.Start(ctx)
+
+	defer database.Close()
 }

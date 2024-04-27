@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 )
 
@@ -11,12 +12,13 @@ type Customer struct {
 	Address    string `json:"Address"`
 }
 
-func (customer *Customer) Create(db *sql.DB) error {
+func (customer *Customer) Create(ctx context.Context, db *sql.DB) error {
 	query := `INSERT INTO customer (name, email, address)
 		VALUES ($1, $2, $3)
 		RETURNING customer_id`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		customer.Name,
 		customer.Email,
@@ -29,12 +31,13 @@ func (customer *Customer) Create(db *sql.DB) error {
 	return nil
 }
 
-func (customer *Customer) Read(db *sql.DB) error {
+func (customer *Customer) Read(ctx context.Context, db *sql.DB) error {
 	query := `SELECT name, email, address 
 		FROM customer
 		WHERE customer_id = $1`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		customer.CustomerId).Scan(
 		&customer.Name,
@@ -48,10 +51,10 @@ func (customer *Customer) Read(db *sql.DB) error {
 	return nil
 }
 
-func (customer *Customer) Update(db *sql.DB) error {
+func (customer *Customer) Update(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
-func (customer *Customer) Delete(db *sql.DB) error {
+func (customer *Customer) Delete(ctx context.Context, db *sql.DB) error {
 	return nil
 }

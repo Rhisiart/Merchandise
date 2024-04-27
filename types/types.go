@@ -1,14 +1,15 @@
 package types
 
 import (
+	"context"
 	"database/sql"
 )
 
 type Operation interface {
-	Create(db *sql.DB) error
-	Read(db *sql.DB) error
-	Update(db *sql.DB) error
-	Delete(db *sql.DB) error
+	Create(ctx context.Context, db *sql.DB) error
+	Read(ctx context.Context, db *sql.DB) error
+	Update(ctx context.Context, db *sql.DB) error
+	Delete(ctx context.Context, db *sql.DB) error
 }
 
 type Controllers interface {

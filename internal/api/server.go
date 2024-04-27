@@ -1,9 +1,13 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/Rhisiart/Merchandise/internal/config"
 	"github.com/Rhisiart/Merchandise/internal/db"
@@ -24,7 +28,7 @@ func NewServer(config config.HTTPServer, database *db.Database) *Server {
 	}
 }
 
-func (s *Server) Start() {
+func (s *Server) Start(ctx context.Context) {
 	s.routes()
 
 	server := http.Server{
@@ -32,11 +36,35 @@ func (s *Server) Start() {
 		Handler: s.router,
 	}
 
+	log.Printf("Server listing on port %d", s.config.Port)
+
+	shutdownComplete := handleShutdown(func() {
+		if err := server.Shutdown(ctx); err != nil {
+			log.Printf("server.Shutdown failed: %v\n", err)
+		}
+	})
+
 	if err := server.ListenAndServe(); err == http.ErrServerClosed {
-		log.Printf("shutdown the server:")
+		<-shutdownComplete
 	} else {
 		log.Printf("http.ListenAndServe failed: %v\n", err)
 	}
 
 	log.Println("Shutdown gracefully")
+}
+
+func handleShutdown(onShutdownSignal func()) <-chan struct{} {
+	shutdown := make(chan struct{})
+
+	go func() {
+		shutdownSignal := make(chan os.Signal, 1)
+		signal.Notify(shutdownSignal, os.Interrupt, syscall.SIGTERM)
+
+		<-shutdownSignal
+
+		onShutdownSignal()
+		close(shutdown)
+	}()
+
+	return shutdown
 }

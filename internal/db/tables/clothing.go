@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 )
 
@@ -11,12 +12,13 @@ type Clothing struct {
 	Price      int
 }
 
-func (clothing *Clothing) Create(db *sql.DB) error {
+func (clothing *Clothing) Create(ctx context.Context, db *sql.DB) error {
 	query := `INSERT INTO clothing (design_id, name, price)
 		VALUES ($1, $2, $3)
 		RETURNING clothing_id`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		clothing.DesignId,
 		clothing.Name,
@@ -29,12 +31,13 @@ func (clothing *Clothing) Create(db *sql.DB) error {
 	return nil
 }
 
-func (clothing *Clothing) Read(db *sql.DB) error {
+func (clothing *Clothing) Read(ctx context.Context, db *sql.DB) error {
 	query := `SELECT design_id, name, price
 		FROM clothing
 		WHERE clothing_id = $1`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		clothing.ClothingId).Scan(
 		&clothing.DesignId,
@@ -48,10 +51,10 @@ func (clothing *Clothing) Read(db *sql.DB) error {
 	return nil
 }
 
-func (clothing *Clothing) Update(db *sql.DB) error {
+func (clothing *Clothing) Update(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
-func (clothing *Clothing) Delete(db *sql.DB) error {
+func (clothing *Clothing) Delete(ctx context.Context, db *sql.DB) error {
 	return nil
 }

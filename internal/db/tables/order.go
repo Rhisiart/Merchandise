@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 )
 
@@ -10,12 +11,13 @@ type Order struct {
 	CreateOn   string
 }
 
-func (order *Order) Create(db *sql.DB) error {
+func (order *Order) Create(ctx context.Context, db *sql.DB) error {
 	query := `INSERT INTO order (customer_id, createOn)
 		VALUES ($1, $2)
 		RETURNING order_id`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		order.CustomerId,
 		order.CreateOn).Scan(&order.OrderId)
@@ -27,12 +29,13 @@ func (order *Order) Create(db *sql.DB) error {
 	return nil
 }
 
-func (order *Order) Read(db *sql.DB) error {
+func (order *Order) Read(ctx context.Context, db *sql.DB) error {
 	query := `SELECT customer_id, createOn 
 		FROM customer
 		WHERE customer_id = $1`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		order.OrderId).Scan(
 		&order.CustomerId,
@@ -45,10 +48,10 @@ func (order *Order) Read(db *sql.DB) error {
 	return nil
 }
 
-func (order *Order) Update(db *sql.DB) error {
+func (order *Order) Update(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
-func (order *Order) Delete(db *sql.DB) error {
+func (order *Order) Delete(ctx context.Context, db *sql.DB) error {
 	return nil
 }

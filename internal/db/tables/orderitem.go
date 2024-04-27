@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 )
 
@@ -11,12 +12,13 @@ type OrderItem struct {
 	Quantity    int
 }
 
-func (orderItem *OrderItem) Create(db *sql.DB) error {
+func (orderItem *OrderItem) Create(ctx context.Context, db *sql.DB) error {
 	query := `INSERT INTO orderitem (order_id, clothing_id, quantity)
 		VALUES ($1, $2, $3)
 		RETURNING order_item_id`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		orderItem.OrderId,
 		orderItem.ClothingId,
@@ -29,12 +31,13 @@ func (orderItem *OrderItem) Create(db *sql.DB) error {
 	return nil
 }
 
-func (orderItem *OrderItem) Read(db *sql.DB) error {
+func (orderItem *OrderItem) Read(ctx context.Context, db *sql.DB) error {
 	query := `SELECT order_id, clothing_id, quantity 
 		FROM orderitem
 		WHERE order_item_id = $1`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		orderItem.OrderItemId).Scan(
 		&orderItem.OrderId,
@@ -48,10 +51,10 @@ func (orderItem *OrderItem) Read(db *sql.DB) error {
 	return nil
 }
 
-func (orderItem *OrderItem) Update(db *sql.DB) error {
+func (orderItem *OrderItem) Update(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
-func (orderItem *OrderItem) Delete(db *sql.DB) error {
+func (orderItem *OrderItem) Delete(ctx context.Context, db *sql.DB) error {
 	return nil
 }

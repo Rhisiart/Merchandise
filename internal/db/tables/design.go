@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 )
 
@@ -10,12 +11,13 @@ type Design struct {
 	Description string
 }
 
-func (design *Design) Create(db *sql.DB) error {
+func (design *Design) Create(ctx context.Context, db *sql.DB) error {
 	query := `INSERT INTO design (name, description)
 		VALUES ($1, $2)
 		RETURNING design_id`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		design.Name,
 		design.Description).Scan(&design.DesignId)
@@ -27,12 +29,13 @@ func (design *Design) Create(db *sql.DB) error {
 	return nil
 }
 
-func (design *Design) Read(db *sql.DB) error {
+func (design *Design) Read(ctx context.Context, db *sql.DB) error {
 	query := `SELECT name, description 
 		FROM design
 		WHERE design_id = $1`
 
-	err := db.QueryRow(
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		design.DesignId).Scan(&design.Name, &design.Description)
 
@@ -43,10 +46,10 @@ func (design *Design) Read(db *sql.DB) error {
 	return nil
 }
 
-func (design *Design) Update(db *sql.DB) error {
+func (design *Design) Update(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
-func (design *Design) Delete(db *sql.DB) error {
+func (design *Design) Delete(ctx context.Context, db *sql.DB) error {
 	return nil
 }

@@ -10,7 +10,6 @@ import (
 type CustomerRequest struct {
 	*tables.Customer
 }
-
 type CustomerResponse struct {
 	*tables.Customer
 }
@@ -41,7 +40,7 @@ func (s *Server) handleCreateCustomer(w http.ResponseWriter, r *http.Request) {
 		Address: data.Address,
 	}
 
-	err := s.database.Create(customer)
+	err := s.database.Create(r.Context(), customer)
 
 	if err != nil {
 		render.Render(w, r, ErrInternalServerError)

@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/Rhisiart/Merchandise/types"
@@ -33,19 +34,19 @@ func (db *Database) Connect() error {
 	return nil
 }
 
-func (db *Database) Create(operation types.Operation) error {
-	return operation.Create(db.database)
+func (db *Database) Create(ctx context.Context, operation types.Operation) error {
+	return operation.Create(ctx, db.database)
 }
 
-func (db *Database) Read(operation types.Operation) error {
-	return operation.Read(db.database)
+func (db *Database) Read(ctx context.Context, operation types.Operation) error {
+	return operation.Read(ctx, db.database)
 }
 
-func (db *Database) Update(operation types.Operation) error {
+func (db *Database) Update(ctx context.Context, operation types.Operation) error {
 	return nil
 }
 
-func (db *Database) Delete(operation types.Operation) error {
+func (db *Database) Delete(ctx context.Context, operation types.Operation) error {
 	return nil
 }
 
