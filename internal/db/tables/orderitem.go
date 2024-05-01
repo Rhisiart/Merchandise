@@ -6,8 +6,8 @@ import (
 )
 
 type OrderItem struct {
-	OrderItemId int64
-	OrderId     int64
+	OrderItemId int
+	OrderId     int
 	ClothingId  string
 	Quantity    int
 }

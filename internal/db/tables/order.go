@@ -6,8 +6,8 @@ import (
 )
 
 type Order struct {
-	OrderId    int64
-	CustomerId int64
+	OrderId    int
+	CustomerId int
 	CreateOn   string
 }
 

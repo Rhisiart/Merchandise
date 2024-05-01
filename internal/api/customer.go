@@ -2,28 +2,48 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	tables "github.com/Rhisiart/Merchandise/internal/db/tables"
+	"github.com/Rhisiart/Merchandise/types"
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
-type CustomerRequest struct {
-	*tables.Customer
-}
-type CustomerResponse struct {
-	*tables.Customer
+func (s *Server) handleGetAllCustomers(w http.ResponseWriter, r *http.Request) {
+	var customers []types.Table
+	customer := &tables.Customer{}
+
+	err := s.database.ReadAll(r.Context(), customer, &customers)
+
+	if err != nil {
+		render.Render(w, r, ErrInternalServerError)
+		return
+	}
+
+	render.RenderList(w, r, NewListResponse(customers))
 }
 
-func (crt *CustomerRequest) Bind(r *http.Request) error {
-	return nil
-}
+func (s *Server) handleGetCustomer(w http.ResponseWriter, r *http.Request) {
+	idParameter := chi.URLParam(r, "customerId")
+	id, err := strconv.Atoi(idParameter)
 
-func (crt *CustomerResponse) Render(w http.ResponseWriter, r *http.Request) error {
-	return nil
-}
+	if err != nil {
+		render.Render(w, r, ErrInternalServerError)
+	}
 
-func (s *Server) handleListCustomers(w http.ResponseWriter, r *http.Request) {
-	//ctx := r.Context()
+	customer := &tables.Customer{
+		CustomerId: id,
+	}
+
+	queryErr := s.database.Read(r.Context(), customer)
+
+	if queryErr != nil {
+		render.Render(w, r, ErrInternalServerError)
+		return
+	}
+
+	render.Render(w, r, NewCustomerResponse(customer))
 }
 
 func (s *Server) handleCreateCustomer(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +67,5 @@ func (s *Server) handleCreateCustomer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.Render(w, r, &CustomerResponse{
-		Customer: customer,
-	})
+	render.Render(w, r, NewCustomerResponse(customer))
 }

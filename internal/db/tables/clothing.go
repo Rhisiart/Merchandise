@@ -6,7 +6,7 @@ import (
 )
 
 type Clothing struct {
-	ClothingId int64
+	ClothingId int
 	DesignId   int64
 	Name       string
 	Price      int

@@ -3,10 +3,12 @@ package db
 import (
 	"context"
 	"database/sql"
+
+	"github.com/Rhisiart/Merchandise/types"
 )
 
 type Customer struct {
-	CustomerId int64  `json:"CustomerId"`
+	CustomerId int    `json:"CustomerId"`
 	Name       string `json:"Name"`
 	Email      string `json:"Email"`
 	Address    string `json:"Address"`
@@ -46,6 +48,35 @@ func (customer *Customer) Read(ctx context.Context, db *sql.DB) error {
 
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (customer *Customer) ReadAll(ctx context.Context, db *sql.DB, list *[]types.Table) error {
+	query := `SELECT customer_id, name, email, address
+			FROM customer`
+
+	rows, err := db.QueryContext(ctx, query)
+
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		newCustomer := new(Customer)
+
+		if err := rows.Scan(
+			&newCustomer.CustomerId,
+			&newCustomer.Name,
+			&newCustomer.Email,
+			&newCustomer.Address); err != nil {
+			return err
+		}
+
+		*list = append(*list, newCustomer)
 	}
 
 	return nil

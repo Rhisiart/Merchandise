@@ -34,19 +34,23 @@ func (db *Database) Connect() error {
 	return nil
 }
 
-func (db *Database) Create(ctx context.Context, operation types.Operation) error {
+func (db *Database) Create(ctx context.Context, operation types.Table) error {
 	return operation.Create(ctx, db.database)
 }
 
-func (db *Database) Read(ctx context.Context, operation types.Operation) error {
+func (db *Database) Read(ctx context.Context, operation types.Table) error {
 	return operation.Read(ctx, db.database)
 }
 
-func (db *Database) Update(ctx context.Context, operation types.Operation) error {
+func (db *Database) ReadAll(ctx context.Context, operation types.Table, list *[]types.Table) error {
+	return operation.ReadAll(ctx, db.database, list)
+}
+
+func (db *Database) Update(ctx context.Context, operation types.Table) error {
 	return nil
 }
 
-func (db *Database) Delete(ctx context.Context, operation types.Operation) error {
+func (db *Database) Delete(ctx context.Context, operation types.Table) error {
 	return nil
 }
 

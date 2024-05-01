@@ -6,7 +6,7 @@ import (
 )
 
 type Design struct {
-	DesignId    int64
+	DesignId    int
 	Name        string
 	Description string
 }
