@@ -7,12 +7,12 @@ import (
 )
 
 type ErrResponse struct {
-	Err            error `json:"-"` // low-level runtime error
-	HTTPStatusCode int   `json:"-"` // http response status code
+	Err            error `json:"-"`
+	HTTPStatusCode int   `json:"-"`
 
-	StatusText string `json:"status"`          // user-level status message
-	AppCode    int64  `json:"code,omitempty"`  // application-specific error code
-	ErrorText  string `json:"error,omitempty"` // application-level error message, for debugging
+	Message   string `json:"message"`
+	AppCode   int64  `json:"code,omitempty"`
+	ErrorText string `json:"error,omitempty"`
 }
 
 func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
@@ -21,16 +21,25 @@ func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
 }
 
 var (
-	ErrNotFound            = &ErrResponse{HTTPStatusCode: 404, StatusText: "Resource not found."}
-	ErrBadRequest          = &ErrResponse{HTTPStatusCode: 400, StatusText: "Bad request"}
-	ErrInternalServerError = &ErrResponse{HTTPStatusCode: 500, StatusText: "Internal Server Error"}
+	ErrNotFound            = &ErrResponse{HTTPStatusCode: 404, Message: "Resource not found."}
+	ErrBadRequest          = &ErrResponse{HTTPStatusCode: 400, Message: "Bad request"}
+	ErrInternalServerError = &ErrResponse{HTTPStatusCode: 500, Message: "Internal Server Error"}
 )
+
+func NewError(err error, message string, statusCode int) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: statusCode,
+		Message:        message,
+		ErrorText:      err.Error(),
+	}
+}
 
 func ErrConflict(err error) render.Renderer {
 	return &ErrResponse{
 		Err:            err,
 		HTTPStatusCode: 409,
-		StatusText:     "Duplicate Key",
+		Message:        "Duplicate Key",
 		ErrorText:      err.Error(),
 	}
 }

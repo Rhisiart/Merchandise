@@ -1,44 +1,28 @@
 package api
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
+	"reflect"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
-type ApiFunc func(http.ResponseWriter, *http.Request) error
-
-type ApiError struct {
-	Error string `json:"error"`
+func GetIdFromURL(r *http.Request, paramName string) (int, error) {
+	id := chi.URLParam(r, paramName)
+	return strconv.Atoi(id)
 }
 
-func handleHttp(f ApiFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := f(w, r); err != nil {
-			encode(
-				w,
-				r,
-				http.StatusBadRequest,
-				ApiError{
-					Error: err.Error(),
-				})
+func combine(dest interface{}, src interface{}) {
+	destValue := reflect.ValueOf(dest).Elem()
+	srcValue := reflect.ValueOf(src)
+
+	for i := 0; i < destValue.NumField(); i++ {
+		destField := destValue.Field(i)
+		srcField := srcValue.FieldByName(destValue.Type().Field(i).Name)
+
+		if srcField.IsValid() && !srcField.IsZero() {
+			destField.Set(srcField)
 		}
 	}
-}
-
-func encode[T any](w http.ResponseWriter, r *http.Request, status int, v T) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	if err := json.NewEncoder(w).Encode(v); err != nil {
-		return fmt.Errorf("encode json: %w", err)
-	}
-	return nil
-}
-
-func decode[T any](r *http.Request) (T, error) {
-	var v T
-	if err := json.NewDecoder(r.Body).Decode(&v); err != nil {
-		return v, fmt.Errorf("decode json: %w", err)
-	}
-	return v, nil
 }

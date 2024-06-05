@@ -47,11 +47,11 @@ func (db *Database) ReadAll(ctx context.Context, operation types.Table, list *[]
 }
 
 func (db *Database) Update(ctx context.Context, operation types.Table) error {
-	return nil
+	return operation.Update(ctx, db.database)
 }
 
 func (db *Database) Delete(ctx context.Context, operation types.Table) error {
-	return nil
+	return operation.Delete(ctx, db.database)
 }
 
 func (db *Database) Close() error {

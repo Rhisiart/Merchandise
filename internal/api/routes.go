@@ -14,6 +14,8 @@ func (s *Server) routes() {
 
 		r.Route("/{customerId}", func(r chi.Router) {
 			r.Get("/", s.handleGetCustomer)
+			r.Delete("/", s.handleDeleteCustomer)
+			r.Patch("/", s.handlePatchCustomer)
 		})
 	})
 }

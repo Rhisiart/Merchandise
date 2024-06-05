@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-type omit *struct{}
+//type omit *struct{}
 
 type CustomerRequest struct {
 	*tables.Customer
@@ -16,14 +16,16 @@ type CustomerRequest struct {
 type CustomerResponse struct {
 	*tables.Customer
 
-	CustomerId omit `json:"CustomerId,omitempty"`
+	StatusCode int `json:"-"`
+	//CustomerId omit `json:"CustomerId,omitempty"`
 }
 
-func (crt *CustomerRequest) Bind(r *http.Request) error {
+func (cr *CustomerRequest) Bind(r *http.Request) error {
 	return nil
 }
 
-func (crt *CustomerResponse) Render(w http.ResponseWriter, r *http.Request) error {
+func (cr *CustomerResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	//render.Status(r, cr.StatusCode)
 	return nil
 }
 
@@ -44,7 +46,6 @@ func NewListResponse(rows []types.Table) []render.Renderer {
 
 			//do for all the tables
 		}
-
 	}
 
 	return list

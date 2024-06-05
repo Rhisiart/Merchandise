@@ -1,12 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
-	"strconv"
 
 	tables "github.com/Rhisiart/Merchandise/internal/db/tables"
 	"github.com/Rhisiart/Merchandise/types"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
@@ -25,8 +24,7 @@ func (s *Server) handleGetAllCustomers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleGetCustomer(w http.ResponseWriter, r *http.Request) {
-	idParameter := chi.URLParam(r, "customerId")
-	id, err := strconv.Atoi(idParameter)
+	id, err := GetIdFromURL(r, "customerId")
 
 	if err != nil {
 		render.Render(w, r, ErrInternalServerError)
@@ -39,7 +37,10 @@ func (s *Server) handleGetCustomer(w http.ResponseWriter, r *http.Request) {
 	queryErr := s.database.Read(r.Context(), customer)
 
 	if queryErr != nil {
-		render.Render(w, r, ErrInternalServerError)
+		render.Render(w, r, NewError(
+			queryErr,
+			fmt.Sprintf("The customer with id %d not found.", id),
+			http.StatusNotFound))
 		return
 	}
 
@@ -68,4 +69,56 @@ func (s *Server) handleCreateCustomer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Render(w, r, NewCustomerResponse(customer))
+}
+
+func (s *Server) handlePatchCustomer(w http.ResponseWriter, r *http.Request) {
+	id, err := GetIdFromURL(r, "customerId")
+
+	if err != nil {
+		render.Render(w, r, ErrInternalServerError)
+	}
+
+	data := CustomerRequest{}
+
+	if err := render.Bind(r, &data); err != nil {
+		render.Render(w, r, ErrBadRequest)
+		return
+	}
+
+	customer := &tables.Customer{
+		CustomerId: id,
+	}
+
+	combine(customer, data)
+
+	queryErr := s.database.Update(r.Context(), customer)
+
+	if queryErr != nil {
+		render.Render(w, r, ErrInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	w.Write(nil)
+}
+
+func (s *Server) handleDeleteCustomer(w http.ResponseWriter, r *http.Request) {
+	id, err := GetIdFromURL(r, "customerId")
+
+	if err != nil {
+		render.Render(w, r, ErrInternalServerError)
+	}
+
+	customer := &tables.Customer{
+		CustomerId: id,
+	}
+
+	dbErr := s.database.Delete(r.Context(), customer)
+
+	if dbErr != nil {
+		render.Render(w, r, ErrInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	w.Write(nil)
 }
