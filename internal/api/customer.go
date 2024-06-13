@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	tables "github.com/Rhisiart/Merchandise/internal/db/tables"
+	tables "github.com/Rhisiart/Merchandise/internal/storage/tables"
 	"github.com/Rhisiart/Merchandise/types"
 	"github.com/go-chi/render"
 )
@@ -76,6 +76,7 @@ func (s *Server) handlePatchCustomer(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		render.Render(w, r, ErrInternalServerError)
+		return
 	}
 
 	data := CustomerRequest{}
@@ -85,16 +86,12 @@ func (s *Server) handlePatchCustomer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	customer := &tables.Customer{
-		CustomerId: id,
-	}
-
-	combine(customer, data)
-
-	queryErr := s.database.Update(r.Context(), customer)
+	data.CustomerId = id
+	queryErr := s.database.Update(r.Context(), data)
 
 	if queryErr != nil {
 		render.Render(w, r, ErrInternalServerError)
+		return
 	}
 
 	w.WriteHeader(http.StatusNoContent)

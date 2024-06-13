@@ -15,16 +15,3 @@ type Table interface {
 
 type Controllers interface {
 }
-
-type ClothingType struct {
-	ClothingTypeId int64
-	Name           string
-	Description    string
-}
-
-type Clothing struct {
-	ClothingId int64
-	DesignId   int64
-	Name       string
-	Price      int
-}

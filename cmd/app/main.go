@@ -6,7 +6,7 @@ import (
 
 	"github.com/Rhisiart/Merchandise/internal/api"
 	"github.com/Rhisiart/Merchandise/internal/config"
-	"github.com/Rhisiart/Merchandise/internal/db"
+	"github.com/Rhisiart/Merchandise/internal/storage"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	database := db.NewDatabase(cfg.Database.DatabaseUrl)
+	database := storage.NewDatabase(cfg.Database.DatabaseUrl)
 	connErro := database.Connect()
 
 	if connErro != nil {

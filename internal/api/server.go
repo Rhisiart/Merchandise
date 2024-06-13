@@ -10,17 +10,17 @@ import (
 	"syscall"
 
 	"github.com/Rhisiart/Merchandise/internal/config"
-	"github.com/Rhisiart/Merchandise/internal/db"
+	"github.com/Rhisiart/Merchandise/internal/storage"
 	"github.com/go-chi/chi/v5"
 )
 
 type Server struct {
 	config   config.HTTPServer
-	database *db.Database
+	database *storage.Database
 	router   *chi.Mux
 }
 
-func NewServer(config config.HTTPServer, database *db.Database) *Server {
+func NewServer(config config.HTTPServer, database *storage.Database) *Server {
 	return &Server{
 		config:   config,
 		database: database,

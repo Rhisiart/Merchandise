@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	tables "github.com/Rhisiart/Merchandise/internal/db/tables"
+	tables "github.com/Rhisiart/Merchandise/internal/storage/tables"
 	"github.com/Rhisiart/Merchandise/types"
 	"github.com/go-chi/render"
 )

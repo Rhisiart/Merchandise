@@ -1,4 +1,4 @@
-package db
+package storage
 
 import (
 	"context"
@@ -6,14 +6,16 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/Rhisiart/Merchandise/enum"
+	"github.com/Rhisiart/Merchandise/internal/storage"
 	"github.com/Rhisiart/Merchandise/types"
 )
 
 type Customer struct {
-	CustomerId int    `json:"CustomerId"`
-	Name       string `json:"Name"`
-	Email      string `json:"Email"`
-	Address    string `json:"Address"`
+	CustomerId int    `json:"CustomerId,omitempty"`
+	Name       string `json:"Name,omitempty"`
+	Email      string `json:"Email,omitempty"`
+	Address    string `json:"Address,omitempty"`
 }
 
 func (customer *Customer) Create(ctx context.Context, db *sql.DB) error {
@@ -85,20 +87,25 @@ func (customer *Customer) ReadAll(ctx context.Context, db *sql.DB, list *[]types
 }
 
 func (customer *Customer) Update(ctx context.Context, db *sql.DB) error {
-	columns := "name = $1, email = $2, address = $3"
+	query := storage.NewQuery(enum.Update, "Customer", customer)
+	expression := query.Expression()
+	args, e := query.Values()
 
-	query := fmt.Sprintf(`UPDATE customer 
+	if e != nil {
+		return e
+	}
+
+	q := fmt.Sprintf(`UPDATE customer 
 						SET %s
-						WHERE customer_id = $4`,
-		columns)
+						WHERE customer_id = $1`,
+		expression)
+
+	fmt.Printf("query = %s \n", q)
 
 	_, err := db.ExecContext(
 		ctx,
-		query,
-		customer.Name,
-		customer.Email,
-		customer.Address,
-		customer.CustomerId)
+		q,
+		args...)
 
 	if err != nil {
 		return err
